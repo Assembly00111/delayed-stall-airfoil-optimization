@@ -1,0 +1,52 @@
+#Steps to run the case
+
+RE = 100
+
+#To clean the directory, this is optional
+
+foamCleanTutorials
+
+foamCleanCase
+
+
+
+#To generate the mesh and check mesh quality
+
+blockMesh
+
+snappyHexMesh -noFunctionObjects -overwrite
+
+extrudeMesh -noFunctionObjects
+
+createPatch -overwrite
+
+checkMesh
+
+
+# Running case file
+
+pimpleScalarTransportFoam > log.pimpleScalarTransportFoam &
+pyFoamPlotWatcher.py log.pimpleScalarTransportFoam
+		
+
+
+# Visualization
+
+#cl Cd plot
+
+gnuplot scripts0/plot_cl
+gnuplot scripts0/plot_cd
+
+
+paraFoam
+
+IMP:For probes postprocessing
+cd postProcessing/probes1/0/
+cp U U_bkp1
+sed 's/(/ /g' U_bkp1 >U_bkp2
+sed 's/)/ /g' U_bkp2 >U_final
+
+gnuplot plot_probesX
+gnuplot plot_probesY
+
+

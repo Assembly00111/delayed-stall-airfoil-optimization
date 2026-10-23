@@ -1,0 +1,109 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  10
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+//
+// TEMPLATE for domain-independence sweep.
+// Placeholders -3 27 -8 8 23 12 are substituted by
+// run_domain_sweep.sh. Do not edit the placeholders by hand; edit the
+// DOMAINS array at the top of run_domain_sweep.sh instead.
+//
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+convertToMeters 1;
+
+vertices
+(
+    // vertices of block 1
+    ( -3  -8  -0.05)	// vertex 0
+    ( -3  -8   0.05)	// vertex 1
+    ( 27  -8  -0.05)	// vertex 2
+    ( 27  -8   0.05)	// vertex 3
+    ( 27  8  -0.05)	// vertex 4
+    ( 27  8   0.05)	// vertex 5
+    ( -3  8  -0.05)	// vertex 6
+    ( -3  8   0.05)	// vertex 7
+);
+
+blocks
+(
+    // background mesh; 23/12 scaled with domain size so the far-field
+    // cell density stays constant across the sweep (see run_domain_sweep.sh)
+    hex ( 0  2  4  6  1  3  5  7) (23 12 1) simpleGrading (1 1 1)
+);
+
+boundary
+(
+    Top
+    {
+        type patch;
+        faces
+        (
+            ( 6  4  5  7) // top
+        );
+    }
+
+    Bottom
+    {
+        type patch;
+        faces
+        (
+            ( 0  2  3  1) // bottom
+        );
+    }
+
+    Inlet
+    {
+        type patch;
+        faces
+        (
+            ( 0  1  7  6)
+        );
+    }
+
+    Outlet
+    {
+        type patch;
+        faces
+        (
+            ( 2  3  5  4)
+        );
+    }
+
+    Front
+    {
+        type patch;
+        faces
+        (
+            ( 0  2  4  6)
+        );
+    }
+
+    Back
+    {
+        type patch;
+        faces
+        (
+            ( 1  3  5  7)
+        );
+    }
+);
+
+
+mergePatchPairs
+(
+);
+
+
+// ************************************************************************* //

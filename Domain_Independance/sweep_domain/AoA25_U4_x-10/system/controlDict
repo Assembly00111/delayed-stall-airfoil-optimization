@@ -1,0 +1,120 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     pimpleFoam;
+
+startFrom       startTime;
+
+startTime       0;
+
+//stopAt	  writeNow;
+
+stopAt	  endTime;
+
+endTime         150;
+
+deltaT          0.005;
+
+writeControl    runTime;
+/*
+adjustableRunTime
+clockTime
+cpuTime
+runTime
+timeStep
+*/
+
+writeInterval   0.1;
+
+/*
+secondaryWriteControl    cpuTime;
+secondaryWriteInterval   1000; 
+secondaryPurgeWrite      1; 
+*/
+
+purgeWrite      10;
+
+writeFormat     ascii;
+
+writePrecision  6;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+// ************************************************************************* //
+
+forcesFunctions
+{
+    #includeFunc forcesIncompressible
+    (
+        patches=(wing),
+        rhoInf=1.0,
+        CofR=(0 0 0),
+        pitchAxis=(0 1 0)
+    )
+
+    #includeFunc forceCoeffsIncompressible
+    (
+        patches=(wing),
+        magUInf=1,
+        lRef=1,    
+        Aref=0.1,     
+        CofR=(0 0 0),
+        liftDir=(0 1 0),
+        dragDir=(1 0 0),
+        pitchAxis=(0 0 1)
+    )
+}
+
+numericalFunctions
+{
+    #includeFunc residuals(p, U, C)
+
+    #includeFunc timeStep
+}	
+
+functions
+{
+    // $forcesFunctions;
+    $numericalFunctions;
+}
+
+functions
+{
+	forces
+	{
+		type            forceCoeffs;
+		libs            ("libforces.so");
+		writeControl    timeStep;
+		writeInterval   1;
+		patches         ("wing");
+		rho             rhoInf;      // Indicates incompressible
+		log             true;
+		rhoInf          1;           // Redundant for incompressible
+		liftDir         (0 1 0);
+		dragDir         (1 0 0);
+		CofR            (0 0 0);  // Axle midpoint on ground
+		pitchAxis       (0 1 0);
+		magUInf         1;
+		lRef            1;        // Wheelbase length D
+		Aref            0.1;        // Estimated L*D
+	}
+};

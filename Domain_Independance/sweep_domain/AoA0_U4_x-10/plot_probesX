@@ -1,0 +1,14 @@
+
+
+set key at 50000, 400
+set xlabel "u (m/s)"
+set xlabel "time (s)"
+
+plot[][] "postProcessing/probes1/0/U_final" using 1:2 with lines lw 4 title "Probe 1",\
+                         "postProcessing/probes1/0/U_final" using 1:5 with lines lw 4 title "Probe 2",\
+                          "postProcessing/probes1/0/U_final" using 1:8 with lines lw 4 title "Probe 3"
+
+pause 2
+reread
+
+
